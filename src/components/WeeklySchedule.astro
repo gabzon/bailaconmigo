@@ -1,0 +1,309 @@
+---
+import CourseCard from "./CourseCard.astro";
+import NoClassesSpan from "./NoClassesSpan.astro";
+let orgApiUrl;
+let response;
+let results;
+let courses;
+
+let mondays;
+let tuesdays;
+let wednesdays;
+let thursdays;
+let fridays;
+let saturdays;
+let sundays;
+
+let scheduleSize = "w-48";
+let withWeekend = true;
+
+if (import.meta.env.MODE === 'development') {
+  orgApiUrl = import.meta.env.PUBLIC_ORG_API_URL;
+} else {
+  orgApiUrl = process.env.ORG_API_URL;
+}
+
+try {
+	response = await fetch('https://corazon.dance/orion/organizations/22/courses');
+	results = await response.json();
+	console.log('response:', response);
+  	console.log('data:', results);
+    courses = results.data;
+} catch (error) {
+  console.error('Fetch failed:', error);
+  console.log('Fetch failed:', error);
+}
+
+const { 
+  title = 'Schedule',
+  subtitle = "Explore our schedule packed with classes for all levels and interests.",
+} = Astro.props
+
+mondays = courses.filter((course: { monday: boolean; })=> course.monday === true); 
+tuesdays = courses.filter((course: { tuesday: boolean; })=> course.tuesday === true);
+wednesdays = courses.filter((course: { wednesday: boolean; })=> course.wednesday === true);
+thursdays = courses.filter((course: { thursday: boolean; })=> course.thursday === true);
+fridays = courses.filter((course: { friday: boolean; })=> course.friday === true);
+saturdays = courses.filter((course: { saturday: boolean; })=> course.saturday === true);
+sundays = courses.filter((course: { sunday: boolean; })=> course.sunday === true);
+
+if (saturdays.length === 0 && sundays.length === 0) {
+    scheduleSize = "w-52";
+    withWeekend = false;
+}
+---
+
+<section id="organization-schedule" class="py-10">
+    
+    <div class="max-w-2xl mx-auto text-center mb-10 lg:mb-14">
+        <h2 class="text-2xl font-bold md:text-4xl md:leading-tight dark:text-white">{title}</h2>
+        <p class="mt-1 text-gray-600 dark:text-neutral-400">{subtitle}</p>
+    </div>
+
+    <div class="sm:hidden">
+        <div x-data="{ activeTab: 'monday' }" class="bg-gray-50 dark:bg-neutral-800 rounded-lg p-1">
+            <div class="flex justify-between mb-2">
+                <button x-on:click="activeTab = 'monday'"
+                    :class="{ 'bg-brand text-dark': activeTab === 'monday', 'text-gray-500': activeTab !== 'monday' }"
+                    class="p-2 rounded-lg">Mo</button>
+                <button x-on:click="activeTab = 'tuesday'"
+                    :class="{ 'bg-brand text-dark': activeTab === 'tuesday', 'text-gray-500': activeTab !== 'tuesday' }"
+                    class="p-2 rounded-lg">Tu</button>
+                <button x-on:click="activeTab = 'wednesday'"
+                    :class="{ 'bg-brand text-dark': activeTab === 'wednesday', 'text-gray-500': activeTab !== 'wednesday' }"
+                    class="p-2 rounded-lg">We</button>
+                <button x-on:click="activeTab = 'thursday'"
+                    :class="{ 'bg-brand text-dark': activeTab === 'thursday', 'text-gray-500': activeTab !== 'thursday' }"
+                    class="p-2 rounded-lg">Th</button>
+                <button x-on:click="activeTab = 'friday'"
+                    :class="{ 'bg-brand text-dark': activeTab === 'friday', 'text-gray-500': activeTab !== 'friday' }"
+                    class="p-2 rounded-lg">Fr</button>
+                <button x-on:click="activeTab = 'saturday'"
+                    :class="{ 'bg-brand text-dark': activeTab === 'saturday', 'text-gray-500': activeTab !== 'saturday' }"
+                    class="p-2 rounded-lg">Sa</button>
+                <button x-on:click="activeTab = 'sunday'"
+                    :class="{ 'bg-brand text-dark': activeTab === 'sunday', 'text-gray-500': activeTab !== 'sunday' }"
+                    class="p-2 rounded-lg">Su</button>
+            </div>
+            <div x-show="activeTab === 'monday'">
+                <div class="bg-gray-100 dark:bg-neutral-700 border-b dark:border-neutral-500">
+                    <h3 class="py-3.5 pl-4 pr-4 text-left text-sm font-semibold text-dark dark:text-light sm:pl-6 uppercase">
+                        Monday
+                    </h3>
+                </div>
+                <div class="p-2 bg-white dark:bg-dark space-y-3">
+                    {mondays.length > 0 ?(
+                        mondays.map((course: any) => <CourseCard course={course} day="mon"/>)
+                    ):(
+                        <NoClassesSpan />
+                    )}
+                </div>
+            </div>
+            <div x-show="activeTab === 'tuesday'">
+                <div class="bg-gray-100 dark:bg-neutral-700 border-b dark:border-neutral-500">
+                    <h3 class="py-3.5 pl-4 pr-4 text-left text-sm font-semibold text-dark dark:text-light sm:pl-6 uppercase">
+                        Tuesday
+                    </h3>
+                </div>
+                <div class="p-2 bg-white dark:bg-dark space-y-3">
+                    {tuesdays.length > 0 ?(
+                        tuesdays.map((course: any) => <CourseCard course={course} day="tue"/>)
+                    ):(
+                        <NoClassesSpan />
+                    )}
+                </div>
+            </div>
+            <div x-show="activeTab === 'wednesday'">
+                <div class="bg-gray-100 dark:bg-neutral-700 border-b dark:border-neutral-500">
+                    <h3 class="py-3.5 pl-4 pr-4 text-left text-sm font-semibold text-dark dark:text-light sm:pl-6 uppercase">
+                        Wednesday
+                    </h3>
+                </div>
+                <div class="bg-white dark:bg-dark p-2 space-y-3">
+                    {wednesdays.length > 0 ?(
+                        wednesdays.map((course: any) => <CourseCard course={course} day="wed" />)
+                    ):(
+                        <NoClassesSpan />
+                    )}
+                </div>
+            </div>
+            <div x-show="activeTab === 'thursday'">
+                <div class="bg-gray-100 dark:bg-neutral-700 border-b dark:border-neutral-500">
+                    <h3 class="py-3.5 pl-4 pr-4 text-left text-sm font-semibold text-dark dark:text-light sm:pl-6 uppercase">
+                        Thursday
+                    </h3>
+                </div>
+                <div class="bg-white dark:bg-dark p-2 space-y-3">
+                    {thursdays.length > 0 ?(
+                        thursdays.map((course: any) => <CourseCard course={course} day="thu" />)
+                    ):(
+                    <NoClassesSpan />
+                    )}
+                </div>
+            </div>
+
+            <div x-show="activeTab === 'friday'">
+                <div class="bg-gray-100 dark:bg-neutral-700 border-b dark:border-neutral-500">
+                    <h3 class="py-3.5 pl-4 pr-4 text-left text-sm font-semibold text-dark dark:text-light sm:pl-6 uppercase">
+                        Friday
+                    </h3>
+                </div>
+                <div class="bg-white dark:bg-dark p-2 space-y-3">
+                    {fridays.length > 0 ?(
+                        fridays.map((course: any) => <CourseCard course={course} day="fri" />)
+                    ):(
+                    <NoClassesSpan />
+                    )}
+                </div>
+            </div>
+            <div x-show="activeTab === 'saturday'">
+                <div class="bg-gray-100 dark:bg-neutral-700 border-b dark:border-neutral-500">
+                    <h3 class="py-3.5 pl-4 pr-4 text-left text-sm font-semibold text-dark dark:text-light sm:pl-6 uppercase">
+                        Saturday
+                    </h3>
+                </div>
+                <div class="bg-white dark:bg-dark p-2 space-y-3">
+                    {saturdays.length > 0 ?(
+                        saturdays.map((course: any) => <CourseCard course={course} day="sat" />)
+                    ):(
+                    <NoClassesSpan />
+                    )}
+                </div>
+            </div>
+            <div x-show="activeTab === 'sunday'">
+                <div class="bg-gray-100 dark:bg-neutral-700 border-b dark:border-neutral-500">
+                    <h3 class="py-3.5 pl-4 pr-4 text-left text-sm font-semibold text-dark dark:text-light sm:pl-6 uppercase">
+                        Sunday
+                    </h3>
+                </div>
+                <div class="bg-white dark:bg-dark p-2 space-y-3">
+                    {sundays.length > 0 ?(
+                        sundays.map((course: any) => <CourseCard course={course} day="sat" />)
+                    ):(
+                    <NoClassesSpan />
+                    )}
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="hidden sm:block">
+        
+        <span class="block text-xs text-gray-600 dark:text-neutral-300 truncate mt-4 mr-2 text-right">
+            Swipe → to see full week
+        </span>
+        
+        <div class="overflow-auto border border-gray-200 dark:border-neutral-500 shadow rounded-md bg-white dark:bg-neutral-900 my-2">
+            <div class="relative flex snap-x w-full overflow-x-auto divide-x divide-gray-300 dark:divide-neutral-600">
+
+                <div class={`snap-start flex-none ${scheduleSize} shrink-0`}>
+                    <div class="bg-gray-100 dark:bg-neutral-800 border-b border-gray-200 dark:border-neutral-500">
+                        <h3 class="py-3.5 pl-4 pr-4 text-left text-sm font-semibold text-gray-900 dark:text-neutral-200 sm:pl-6 uppercase">
+                            Monday
+                        </h3>
+                    </div>
+                    <div class="p-2 bg-white dark:bg-neutral-900 space-y-3">
+                        {mondays.length > 0 ?(
+                            mondays.map((course: any) => <CourseCard course={course} day="mon"/>)
+                        ):(
+                            <NoClassesSpan />
+                        )}
+                    </div>
+                </div>
+
+                <div class={`snap-start flex-none ${scheduleSize} shrink-0`}>
+                    <div class="bg-gray-100 dark:bg-neutral-800 border-b border-gray-200 dark:border-neutral-500">
+                        <h3 class="py-3.5 pl-4 pr-4 text-left text-sm font-semibold text-gray-900 dark:text-neutral-200 sm:pl-6 uppercase">
+                            Tuesday
+                        </h3>
+                    </div>
+                    <div class="p-2 bg-white dark:bg-neutral-900 space-y-3">
+                        {tuesdays.length > 0 ?(
+                            tuesdays.map((course: any) => <CourseCard course={course} day="tue"/>)
+                        ):(
+                            <NoClassesSpan />
+                        )}
+                    </div>
+                </div>
+
+                <div class={`snap-start flex-none ${scheduleSize} shrink-0`}>
+                    <div class="bg-gray-100 dark:bg-neutral-800 border-b border-gray-200 dark:border-neutral-500">
+                        <h3 class="py-3.5 pl-4 pr-4 text-left text-sm font-semibold text-gray-900 dark:text-neutral-200 sm:pl-6 uppercase">
+                            Wednesday
+                        </h3>
+                    </div>
+                    <div class="bg-white dark:bg-neutral-900 p-2 space-y-3">
+                        {wednesdays.length > 0 ?(
+                            wednesdays.map((course: any) => <CourseCard course={course} day="wed" />)
+                        ):(
+                            <NoClassesSpan />
+                        )}
+                    </div>
+                </div>
+
+                <div class={`snap-start flex-none ${scheduleSize} shrink-0`}>
+                    <div class="bg-gray-100 dark:bg-neutral-800 border-b border-gray-200 dark:border-neutral-500">
+                        <h3 class="py-3.5 pl-4 pr-4 text-left text-sm font-semibold text-gray-900 dark:text-neutral-200 sm:pl-6 uppercase">
+                            Thursday
+                        </h3>
+                    </div>
+                    <div class="bg-white dark:bg-neutral-900 p-2 space-y-3">
+                        {thursdays.length > 0 ?(
+                            thursdays.map((course: any) => <CourseCard course={course} day="thu" />)
+                        ):(
+                        <NoClassesSpan />
+                        )}
+                    </div>
+                </div>
+                <div class={`snap-start flex-none ${scheduleSize} shrink-0`}>
+                    <div class="bg-gray-100 dark:bg-neutral-800 border-b border-gray-200 dark:border-neutral-500">
+                        <h3 class="py-3.5 pl-4 pr-4 text-left text-sm font-semibold text-gray-900 dark:text-neutral-200 sm:pl-6 uppercase">
+                            Friday
+                        </h3>
+                    </div>
+                    <div class="bg-white dark:bg-neutral-900 p-2 space-y-3">
+                        {fridays.length > 0 ?(
+                            fridays.map((course: any) => <CourseCard course={course} day="fri" />)
+                        ):(
+                        <NoClassesSpan />
+                        )}
+                    </div>
+                </div>
+                
+                {
+                    withWeekend && (
+                    <div class={`snap-start flex-none ${scheduleSize} shrink-0`}>
+                        <div class="bg-gray-100 dark:bg-neutral-800 border-b border-gray-200 dark:border-neutral-500">
+                            <h3 class="py-3.5 pl-4 pr-4 text-left text-sm font-semibold text-gray-900 dark:text-neutral-200 sm:pl-6 uppercase">
+                                Saturday
+                            </h3>
+                        </div>
+                        <div class="bg-white dark:bg-neutral-900 p-2 space-y-3">
+                            {saturdays.length > 0 ?(
+                                saturdays.map((course: any) => <CourseCard course={course} day="sat" />)
+                            ):(
+                            <NoClassesSpan />
+                            )}
+                        </div>
+                    </div>
+                
+                    <div class={`snap-start flex-none ${scheduleSize} shrink-0`}>
+                        <div class="bg-gray-100 dark:bg-neutral-800 border-b border-gray-200 dark:border-neutral-500">
+                            <h3 class="py-3.5 pl-4 pr-4 text-left text-sm font-semibold text-gray-900 dark:text-neutral-200 sm:pl-6 uppercase">
+                                Sunday
+                            </h3>
+                        </div>
+                        <div class="bg-white dark:bg-neutral-900 p-2 space-y-3">
+                            {sundays.length > 0 ?(
+                                sundays.map((course: any) => <CourseCard course={course} day="sat" />)
+                            ):(
+                            <NoClassesSpan />
+                            )}
+                        </div>
+                    </div>
+                    )
+                }
+            </div>
+        </div>
+    </div>
+
+</section>

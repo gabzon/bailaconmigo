@@ -1,0 +1,92 @@
+---
+import { Icon } from 'astro-icon/components';
+import daysjs from 'dayjs';
+import LinkButton from './LinkButton.astro';
+
+let startTime;
+let endTime;
+let registrationUrl = "#";
+let registrationBtn = false;
+
+const {
+    course = {},
+    day = "mon",
+} = Astro.props;
+
+
+switch (day) {
+    case "mon":
+        startTime = course.start_time_mon;
+        endTime = course.end_time_mon;
+        break;
+    case "tue":
+        startTime = course.start_time_tue;
+        endTime = course.end_time_tue;
+        break;
+    case "wed":
+        startTime = course.start_time_wed;
+        endTime = course.end_time_wed;
+        break;
+    case "thu":
+        startTime = course.start_time_thu;
+        endTime = course.end_time_thu;
+        break;
+    case "fri":
+        startTime = course.start_time_fri;
+        endTime = course.end_time_fri;
+        break;
+    case "sat":
+        startTime = course.start_time_sat;
+        endTime = course.end_time_sat;
+        break;
+    default:
+        startTime = course.start_time_sun;
+        endTime = course.end_time_sun;
+        break;
+}
+
+if (course.manage_registration) {
+    registrationUrl = course.url;
+} else {
+    if (course.registration_url) {
+        registrationUrl = course.registration_url; 
+    }
+}
+---
+
+<div class="ring-1 ring-neutral-300 dark:ring-neutral-700 hover:ring-brand dark:hover:ring-brand shadow hover:shadow-lg rounded-lg group px-3 py-2">
+    <div  class="relative block text-wrap">
+        <div class="flex justify-between items-center space-x-3">
+            <span class="text-left text-sm font-medium text-gray-500 dark:text-gray-400 shrink-0">{daysjs(startTime).format("HH:mm")} - {daysjs(endTime).format("HH:mm")}</span>
+            {
+                course.status === "soon" && (
+                <div class="hs-tooltip">
+                    <button type="button" class="hs-tooltip-toggle">
+                        <Icon name="bi:calendar2-check" class="w-4 h-4 text-amber-500 group-hover:text-pink-500"/>
+                        <span class="hs-tooltip-content hs-tooltip-shown:opacity-100 hs-tooltip-shown:visible opacity-0 transition-opacity inline-block absolute invisible z-10 py-1 px-2 bg-gray-900 text-xs font-medium text-white rounded shadow-sm dark:bg-neutral-700" role="tooltip">
+                            Start: {daysjs(course.start_date).format("DD MMM YYYY")}
+                        </span>
+                    </button>
+                </div>
+                )
+            }
+
+        </div>
+        <h3 class="text-left text-base text-wrap font-semibold text-gray-900 dark:text-neutral-300 group-hover:text-brand">
+            {course.name}
+        </h3>
+        <p class="text-left text-sm font-medium text-gray-500 dark:text-gray-400">{course.level}</p>
+        <p class="text-left text-sm font-medium text-gray-500 dark:text-gray-400">{course.teachers}</p>
+        <p class="text-left text-sm font-medium text-gray-500 dark:text-gray-400">{course.location_name}</p>
+        {
+            registrationBtn && (
+            <div class="my-2">
+                <LinkButton url={registrationUrl} classes="w-full" theme="secondary">
+                    <span class="w-full text-center">Register</span>
+                </LinkButton>
+            </div>
+            )
+        }
+    </div>
+</div>
+

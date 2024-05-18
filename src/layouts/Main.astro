@@ -1,0 +1,29 @@
+<html lang="en" class="">	
+	<head>
+		<meta charset="utf-8" />
+		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+		<meta name="viewport" content="width=device-width" />
+		<meta name="generator" content={Astro.generator} />
+		<link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+		<title>Astro</title>
+		<script is:inline>
+			// The configured mode is stored in local storage
+			const isDarkMode = localStorage.getItem('theme');
+			
+			// Set theme to 'dark' if darkMode = 'true'
+			const themeMode = isDarkMode === 'true' ? 'dark' : '';
+		
+			// Put dark class on html tag to enable dark mode
+			document.querySelector("html").className = themeMode;
+		
+		  </script>
+	</head>
+	<body class="bg-light dark:bg-dark">
+		<script is:inline>
+			const theme = localStorage.getItem("theme") || "dark";
+			document.documentElement.dataset.theme = theme;
+		  </script>
+        <slot />		
+		<script is:inline src="../../node_modules/preline/dist/preline.js"></script>
+	</body>
+</html>

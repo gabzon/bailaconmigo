@@ -1,0 +1,34 @@
+---
+import Main from '../layouts/Main.astro';
+import Hero from '../components/Hero.astro';
+import Events from '../components/Events.astro';
+import WeeklySchedule from '../components/WeeklySchedule.astro';
+import Stats from '../components/Stats.astro';
+import Pricing from '../components/Pricing.astro';
+import Footer from '../layouts/Footer.astro';
+import Navbar from '../layouts/Navbar.astro';
+import About from '../components/About.astro';
+import Contact from '../components/Contact.astro';
+---
+
+<Main>
+	<Navbar/>		
+	<Hero/>
+	<section id="events">
+		<Events title="Upcoming events"/>
+	</section>
+	<section id="courses" class="max-w-[65rem] mx-auto px-4 xl:px-0 py-10 lg:py-10">
+		<WeeklySchedule>
+	</section>
+	<section id="about">
+		<About/>
+		<Stats/>
+	</section>
+	<section id="pricing">
+		<Pricing/>
+	</section>
+	<section id="contact" class="py-16">
+		<Contact/>
+	</section>
+	<Footer/>
+</Main>
